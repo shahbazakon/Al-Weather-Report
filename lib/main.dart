@@ -2,7 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive_flutter/adapters.dart';
-import 'package:weather_service/cubit/cubit/home_cubit.dart';
+import 'package:weather_service/cubit/home/home_cubit.dart';
 import 'package:weather_service/cubit/login/login_cubit.dart';
 import 'package:weather_service/cubit/register/register_cubit.dart';
 import 'package:weather_service/data/services/hive_adapters.dart';
@@ -46,6 +46,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Weather Service',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: primaryColor),
         useMaterial3: true,

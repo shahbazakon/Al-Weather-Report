@@ -3,8 +3,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:hive/hive.dart';
 import "package:intl/intl.dart";
-import 'package:weather_service/cubit/cubit/home_cubit.dart';
+import 'package:weather_service/cubit/home/home_cubit.dart';
+import 'package:weather_service/data/models/ai_suggestion.dart';
 import 'package:weather_service/data/models/weather.dart';
+import 'package:weather_service/presentation/utils/ai_helper.dart';
 import 'package:weather_service/presentation/utils/assets.dart';
 import 'package:weather_service/presentation/utils/colors.dart';
 import 'package:weather_service/presentation/utils/extensions.dart';
@@ -18,11 +20,13 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   late Weather _weather;
+  Future<List<AISuggestion>>? _aiSuggestionsFuture;
+  final TextEditingController _searchController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    // get weather from hive
+    // Fetch weather data from Hive or API
     final weather = Hive.box('myBox').get('weather');
     if (weather != null && weather is Weather) {
       _weather = weather;
@@ -30,6 +34,15 @@ class _HomePageState extends State<HomePage> {
       _weather = Weather.empty();
     }
     context.read<HomeCubit>().getWeatherByLocation();
+
+    // Initialize AI suggestions future
+    _aiSuggestionsFuture = generateAISuggestions(_weather);
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
   }
 
   // get big weather image
@@ -162,6 +175,22 @@ class _HomePageState extends State<HomePage> {
     return windText;
   }
 
+  //refresh AI suggestion
+  void _refreshAISuggestions() {
+    setState(() {
+      _aiSuggestionsFuture = generateAISuggestions(_weather);
+    });
+  }
+
+  //
+  void _searchWeather() {
+    final cityName = _searchController.text.trim();
+    if (cityName.isNotEmpty) {
+      context.read<HomeCubit>().getWeatherByLocation(cityName: cityName);
+      _refreshAISuggestions();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocListener<HomeCubit, HomeState>(
@@ -232,8 +261,38 @@ class _HomePageState extends State<HomePage> {
                     )
                   : SingleChildScrollView(
                       child: Column(
+                        spacing: 18,
                         children: [
-                          const SizedBox(height: 24),
+                          // Add Search Bar
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: TextField(
+                                    controller: _searchController,
+                                    style:
+                                        TextStyle(color: whiteColor, fontWeight: FontWeight.w500),
+                                    decoration: InputDecoration(
+                                      hintText: 'Search city',
+                                      hintStyle: TextStyle(color: whiteColor),
+                                      filled: true,
+                                      suffixIcon: IconButton(
+                                        icon: const Icon(Icons.search, color: whiteColor),
+                                        onPressed: _searchWeather,
+                                      ),
+                                      fillColor: Colors.white30,
+                                      border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(12),
+                                        borderSide: BorderSide(color: Colors.white30),
+                                      ),
+                                    ),
+                                    onSubmitted: (value) => _searchWeather(),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
                           Row(
                             children: [
                               SvgPicture.asset(SvgAsset.pin),
@@ -248,27 +307,10 @@ class _HomePageState extends State<HomePage> {
                               ),
                             ],
                           ),
-                          const SizedBox(height: 15),
-                          Container(
+                          SizedBox(
                             height: 200,
                             width: 200,
-                            decoration: const BoxDecoration(
-                              boxShadow: [
-                                BoxShadow(
-                                  color: shadowColor,
-                                  blurRadius: 100,
-                                  offset: Offset(0, 5),
-                                ),
-                              ],
-                            ),
-                            child:
-                                // Image.network(
-                                //   'https://openweathermap.org/img/w/${_weather.list.first.weather.first.icon}.png',
-                                //   width: 200,
-                                //   height: 200,
-                                //   scale: 0.3,
-                                // ),
-                                Image.asset(
+                            child: Image.asset(
                               _getWeatherImage(
                                 weatherId: _weather.list.first.weather.first.id,
                                 isBig: true,
@@ -276,7 +318,6 @@ class _HomePageState extends State<HomePage> {
                               ),
                             ),
                           ),
-                          const SizedBox(height: 15),
                           Text(
                             '${_weather.list.first.main.temp.toStringAsFixed(0)}º',
                             textAlign: TextAlign.center,
@@ -295,7 +336,6 @@ class _HomePageState extends State<HomePage> {
                               fontWeight: FontWeight.w400,
                             ),
                           ),
-                          const SizedBox(height: 8),
                           Text(
                             _getMinMaxTemp(_weather),
                             textAlign: TextAlign.center,
@@ -305,7 +345,108 @@ class _HomePageState extends State<HomePage> {
                               fontWeight: FontWeight.w400,
                             ),
                           ),
-                          const SizedBox(height: 24),
+                          // AI Suggestions Section
+                          // AI Suggestions Section
+                          FutureBuilder<List<AISuggestion>>(
+                            future: _aiSuggestionsFuture,
+                            builder: (context, snapshot) {
+                              if (snapshot.connectionState == ConnectionState.waiting) {
+                                return const Center(
+                                  child: CircularProgressIndicator(),
+                                );
+                              } else if (snapshot.hasError) {
+                                return Text(
+                                  'Error: ${snapshot.error}',
+                                  style: const TextStyle(
+                                    color: whiteColor,
+                                    fontSize: 14,
+                                  ),
+                                );
+                              } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                                return const Text(
+                                  'No AI suggestions available.',
+                                  style: TextStyle(
+                                    color: whiteColor,
+                                    fontSize: 14,
+                                  ),
+                                );
+                              } else {
+                                final suggestions = snapshot.data!;
+                                return Container(
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(20),
+                                    color: whiteColor.withOpacity(0.2),
+                                  ),
+                                  padding: const EdgeInsets.all(16),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          const Text(
+                                            'AI Suggestions',
+                                            style: TextStyle(
+                                              color: whiteColor,
+                                              fontSize: 17,
+                                              fontWeight: FontWeight.w500,
+                                            ),
+                                          ),
+                                          const Spacer(),
+                                          IconButton(
+                                            onPressed: _refreshAISuggestions,
+                                            icon: const Icon(
+                                              Icons.refresh_rounded,
+                                              color: whiteColor,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 16),
+                                      ...suggestions.map((suggestion) {
+                                        return GestureDetector(
+                                          onTap: () {
+                                            showAISuggestionDetail(context, suggestion);
+                                          },
+                                          child: Container(
+                                            margin: const EdgeInsets.only(bottom: 8),
+                                            padding: const EdgeInsets.all(12),
+                                            decoration: BoxDecoration(
+                                              borderRadius: BorderRadius.circular(12),
+                                              color: whiteColor.withOpacity(0.1),
+                                            ),
+                                            child: Column(
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  suggestion.subtitle,
+                                                  style: const TextStyle(
+                                                    color: whiteColor,
+                                                    fontSize: 15,
+                                                    fontWeight: FontWeight.w500,
+                                                  ),
+                                                ),
+                                                const SizedBox(height: 4),
+                                                Text(
+                                                  suggestion.detailedDescription,
+                                                  style: const TextStyle(
+                                                    color: whiteColor,
+                                                    fontSize: 14,
+                                                    fontWeight: FontWeight.w400,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        );
+                                      }).toList(),
+                                    ],
+                                  ),
+                                );
+                              }
+                            },
+                          ),
                           // today's weather hourly
                           Container(
                             decoration: BoxDecoration(
@@ -413,7 +554,6 @@ class _HomePageState extends State<HomePage> {
                               ],
                             ),
                           ),
-                          const SizedBox(height: 24),
                           // today's weather wind, humidity
                           Container(
                             decoration: BoxDecoration(

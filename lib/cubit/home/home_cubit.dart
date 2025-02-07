@@ -13,12 +13,23 @@ class HomeCubit extends Cubit<HomeState> {
 
   HomeCubit() : super(HomeInitial());
 
-  Future getWeatherByLocation() async {
+  // Updated function with optional cityName parameter
+  Future<void> getWeatherByLocation({String? cityName}) async {
     emit(HomeLoading());
     try {
-      final location = await GeoService().getCurrentLocation();
-      final String api =
-          '?units=metric&lang=en&lat=${location.latitude}&lon=${location.longitude}&appid=$openWeatherMapApiKey';
+      String api;
+
+      if (cityName != null && cityName.isNotEmpty) {
+        // API call for city name
+        api =
+            '?q=${Uri.encodeComponent(cityName)}&units=metric&lang=en&appid=$openWeatherMapApiKey';
+      } else {
+        // API call for geolocation
+        final location = await GeoService().getCurrentLocation();
+        api =
+            '?units=metric&lang=en&lat=${location.latitude}&lon=${location.longitude}&appid=$openWeatherMapApiKey';
+      }
+
       final response = await _dioService.get(api);
       final weather = Weather.fromJson(response.data as Map<String, dynamic>);
       await Hive.box('myBox').put('weather', weather);
