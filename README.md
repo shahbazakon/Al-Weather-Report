@@ -89,51 +89,7 @@ dart pub get
 flutter run
 ```
 
-## ❗️Permissions
-
-### Android
-
-Before running the project, you need to add the following permissions to the `AndroidManifest.xml` file located in the `android/app/src/main` directory.
-
-```xml
-<uses-permission android:name="android.permission.INTERNET" />
-<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-```
-
-### iOS
-
-Before running the project, you need to add the following permissions to the `Info.plist` file located in the `ios/Runner` directory.
-
-```xml
-<key>NSLocationWhenInUseUsageDescription</key>
-<string>This app needs access to location when open.</string>
-```
-
-### MacOS
-
-1. Before running the project, you need to add the following permissions to the `Info.plist` file located in the `macos/Runner` directory.
-
-```xml
-  <key>NSLocationWhenInUseUsageDescription</key>
-  <string>This app needs access to location when open.</string>
-```
-
-2. Add the following permissions to the `macos/Runner/DebugProfile.entitlements` file.
-
-```xml
-  <key>com.apple.security.personal-information.location</key>
-  <true />
-```
-
-3. Add the following permissions to the `macos/Runner/Release.entitlements` file.
-
-```xml
-  <key>com.apple.security.personal-information.location</key>
-  <true />
-```
-
-
+=
 
 
 
