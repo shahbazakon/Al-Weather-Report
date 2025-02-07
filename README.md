@@ -8,13 +8,17 @@ An intelligent weather application powered by **Google Gemini AI**, **Firebase**
 
 | **Splash Screen**                                                                                     | **Login Screen**                                                                                     | **Registration Screen**                                                                                     |
 |------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------|
-| <img src="https://github.com/user-attachments/assets/61522c70-5d4d-4ed6-b05f-d04a7c6a65e2" width="300" height="550"> | <img src="https://github.com/user-attachments/assets/77c32dd8-dba7-4759-960f-7788eedc5f3b" width="300" height="550"> | <img src="https://github.com/user-attachments/assets/cf3e76fb-9ef4-4361-9b8f-1ffae501f434" width="300" height="550"> |
+| <img src="https://github.com/user-attachments/assets/61522c70-5d4d-4ed6-b05f-d04a7c6a65e2" width="300" height="600"> | <img src="https://github.com/user-attachments/assets/77c32dd8-dba7-4759-960f-7788eedc5f3b" width="300" height="600"> | <img src="https://github.com/user-attachments/assets/cf3e76fb-9ef4-4361-9b8f-1ffae501f434" width="300" height="600"> |
 
 | **Search Weather by City**                                                                                     | **AI Suggestions on Weather**                                                                                     | **AI Alerts**                                                                                     |
 |-----------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------|
-| <img src="https://github.com/user-attachments/assets/73523697-d26c-470b-a4f0-2b58bfecf006" width="300" height="550">         | <img src="https://github.com/user-attachments/assets/c7060233-00e5-4d6d-9bab-047e57963e79" width="300" height="550"> | <img src="https://github.com/user-attachments/assets/c8185995-dca1-4ecc-a4d1-1ac4cd01a28b" width="300" height="550"> |
+| <img src="https://github.com/user-attachments/assets/73523697-d26c-470b-a4f0-2b58bfecf006" width="300" height="600">         | <img src="https://github.com/user-attachments/assets/c7060233-00e5-4d6d-9bab-047e57963e79" width="300" height="600"> | <img src="https://github.com/user-attachments/assets/c8185995-dca1-4ecc-a4d1-1ac4cd01a28b" width="300" height="600"> |
 
 ---
+## Recording 🎬
+
+https://github.com/user-attachments/assets/ce5105c5-6867-44ff-bfde-f65c181dcc24
+   
 ---
 
 ## Functionality 🛠️
