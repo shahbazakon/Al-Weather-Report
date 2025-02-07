@@ -8,24 +8,7 @@ Flutter Weather App using OpenWeatherMap API and Bloc Pattern.
 | :-----: | :-: | :-: | :---: | :---: | :-----: |
 |   ✔️    | ✔️  | ✔️  |  ✔️   |  ✖️   |   ✖️    |
 
-## 📸 Screenshots
 
-<!-- variables -->
-
-[splash]: screenshots/splash.jpg "Splash"
-[login]: screenshots/login.jpg "Login"
-[register]: screenshots/register.jpg "Register"
-[home]: screenshots/home.jpg "Home"
-
-<!-- images -->
-
-|      Splash       |      Login      |
-| :---------------: | :-------------: |
-| ![Splash][splash] | ![Login][login] |
-
-|       Register        |     Home      |
-| :-------------------: | :-----------: |
-| ![Register][register] | ![Home][home] |
 
 ## 📚 Dependencies
 
